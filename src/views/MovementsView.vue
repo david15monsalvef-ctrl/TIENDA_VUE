@@ -120,8 +120,10 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useQuasar } from 'quasar'
 import { useInventarioStore } from '../store/useInventarioStore'
 
+const $q = useQuasar()
 const store = useInventarioStore()
 
 const form = ref({
@@ -144,7 +146,7 @@ function actualizarListaMovimientos() {
   })
 }
 
-actualizarListaMovimientos()
+actualizarListaMovimientos() 
 
 const columns = [
   { name: 'fecha', label: 'Fecha y Hora', field: 'fecha', align: 'left', sortable: true },
@@ -157,11 +159,20 @@ const columns = [
 
 function registrar() {
   if (!form.value.productoId) {
-    alert('Por favor seleccione un producto')
+    $q.notify({
+      type: 'warning',
+      message: 'Por favor seleccione un producto',
+      position: 'top'
+    })
     return
   }
+  
   if (form.value.cantidad <= 0) {
-    alert('La cantidad debe ser mayor a 0')
+    $q.notify({
+      type: 'warning',
+      message: 'La cantidad debe ser mayor a 0',
+      position: 'top'
+    })
     return
   }
 
@@ -171,7 +182,11 @@ function registrar() {
   if (productoSeleccionado) {
     // Validar si es Salida o Merma y la cantidad supera el stock actual
     if ((form.value.tipo === 'SALIDA' || form.value.tipo === 'MERMA') && form.value.cantidad > productoSeleccionado.stock) {
-      alert(`¡Stock insuficiente! El producto "${productoSeleccionado.nombre}" solo tiene ${productoSeleccionado.stock} unidades disponibles.`)
+      $q.notify({
+        type: 'negative',
+        message: `¡Stock insuficiente! El producto "${productoSeleccionado.nombre}" solo tiene ${productoSeleccionado.stock} unidades.`,
+        position: 'top'
+      })
       return // Detiene el registro
     }
   }
@@ -189,7 +204,11 @@ function registrar() {
     motivo: ''
   }
 
-  alert('Movimiento registrado con éxito')
+  $q.notify({
+    type: 'positive',
+    message: 'Movimiento registrado con éxito',
+    position: 'top'
+  })
 }
 </script>
 
